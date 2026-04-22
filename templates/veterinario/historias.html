@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias clínicas | Veterinario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('veterinario_historias') }}" class="menu-link active">Historia clínica</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Historias clínicas</h2>
+                    <p>Consulta médica de pacientes</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/veterinario.png') }}" class="avatar-img" alt="Veterinario">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Veterinario</p>
+                        <span class="date-text">Consulta de historias clínicas</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="clientes-grid">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de historias clínicas</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mascota</th>
+                                <th>Especie</th>
+                                <th>Raza</th>
+                                <th>Edad</th>
+                                <th>Propietario</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if historias %}
+                                {% for item in historias %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.mascota_nombre }}</td>
+                                        <td>{{ item.especie }}</td>
+                                        <td>{{ item.raza if item.raza else 'Sin raza' }}</td>
+                                        <td>{{ item.edad if item.edad else 'Sin edad' }}</td>
+                                        <td>{{ item.cliente_nombre }}</td>
+                                        <td>
+                                            <a href="{{ url_for('veterinario_detalle_historia', historia_id=item.id) }}" class="btn-link-action">
+                                                Ver historia
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="empty-state">No hay historias clínicas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

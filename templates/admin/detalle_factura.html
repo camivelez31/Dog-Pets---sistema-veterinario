@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle factura | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link active">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Detalle de factura</h2>
+                    <p>Consulta detallada de la factura</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Admin">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Detalle de facturación</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="clientes-grid">
+
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3>Información general</h3>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Factura</span>
+                            <p>#{{ factura.id }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha</span>
+                            <p>{{ factura.fecha }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Cliente</span>
+                            <p>{{ factura.cliente_nombre }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Documento</span>
+                            <p>{{ factura.cliente_documento }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Teléfono</span>
+                            <p>{{ factura.cliente_telefono }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Correo</span>
+                            <p>{{ factura.cliente_correo }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Mascota</span>
+                            <p>{{ factura.mascota_nombre }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Estado</span>
+                            <p>{{ factura.estado }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Total</span>
+                            <p>${{ factura.total }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Motivo anulación</span>
+                            <p>{{ factura.motivo_anulacion if factura.motivo_anulacion else 'Sin motivo' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Detalle de conceptos</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Cantidad</th>
+                                <th>Precio unitario</th>
+                                <th>Total línea</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if detalle %}
+                                {% for item in detalle %}
+                                    <tr>
+                                        <td>{{ item.concepto }}</td>
+                                        <td>{{ item.cantidad }}</td>
+                                        <td>${{ item.precio_unitario }}</td>
+                                        <td>${{ item.total_linea }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="empty-state">No hay detalle registrado.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Pagos registrados</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Método de pago</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if pagos %}
+                                {% for pago in pagos %}
+                                    <tr>
+                                        <td>{{ pago.fecha }}</td>
+                                        <td>{{ pago.metodo_pago }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="empty-state">No hay pagos registrados.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <a href="{{ url_for('admin_facturas') }}" class="btn-outline-link">Volver</a>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

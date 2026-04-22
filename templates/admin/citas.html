@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Citas | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
+        </div>
+
+        <div class="menu-box">
+            <p class="menu-title">Menú principal</p>
+
+            <ul class="menu-list">
+                <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                <li><a href="{{ url_for('admin_citas') }}" class="menu-link active">Citas</a></li>
+                <li><a href="{{ url_for('admin_facturas') }}" class="menu-link">Facturación</a></li>
+                <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="welcome-box">
+                <h2>Citas</h2>
+                <p>Gestión completa de citas</p>
+            </div>
+
+            <div class="profile-box">
+                <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img">
+                <div>
+                    <h3>{{ nombre }}</h3>
+                    <p class="role-text">Administrador</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="clientes-grid">
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h3>Listado de citas</h3>
+                </div>
+
+                <form method="GET" action="{{ url_for('admin_citas') }}" class="search-form-admin">
+                    <div class="search-group-admin">
+                        <input type="text" name="q" value="{{ busqueda }}" placeholder="Buscar por cliente, mascota o fecha">
+                        <button type="submit" class="btn-secondary">Buscar</button>
+                    </div>
+                </form>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Cliente</th>
+                            <th>Mascota</th>
+                            <th>Veterinario</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr>
+                            <td>{{ cita.fecha }}</td>
+                            <td>{{ cita.hora }}</td>
+                            <td>{{ cita.cliente_nombre }}</td>
+                            <td>{{ cita.mascota_nombre }}</td>
+                            <td>{{ cita.veterinario_nombre if cita.veterinario_nombre else 'Sin asignar' }}</td>
+                            <td>{{ cita.servicio }}</td>
+
+                            <td>
+                                {% if cita.estado == 'Pendiente' %}
+                                    <span class="badge badge-warning">Pendiente</span>
+                                {% elif cita.estado == 'Confirmada' %}
+                                    <span class="badge badge-success">Confirmada</span>
+                                {% elif cita.estado == 'Atendida' %}
+                                    <span class="badge badge-info">Atendida</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Cancelada</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form action="{{ url_for('admin_cambiar_estado_cita', cita_id=cita.id) }}" method="POST">
+                                    <select name="estado">
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Confirmada">Confirmada</option>
+                                        <option value="Atendida">Atendida</option>
+                                        <option value="Cancelada">Cancelada</option>
+                                    </select>
+                                    <button type="submit" class="btn-table">Actualizar</button>
+                                </form>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

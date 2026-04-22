@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturas | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link active">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Facturación</h2>
+                    <p>Consulta completa de facturas del sistema</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Admin">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Módulo de facturación</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="clientes-grid">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de facturas</h3>
+                    </div>
+
+                    <form method="GET" action="{{ url_for('admin_facturas') }}" class="client-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fecha</label>
+                                <input type="date" name="fecha" value="{{ fecha }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <select name="estado">
+                                    <option value="">Todos</option>
+                                    <option value="Pendiente" {% if estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                                    <option value="Pagada" {% if estado == 'Pagada' %}selected{% endif %}>Pagada</option>
+                                    <option value="Anulada" {% if estado == 'Anulada' %}selected{% endif %}>Anulada</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <input type="text" name="cliente" value="{{ cliente }}" placeholder="Buscar por nombre del cliente">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-secondary">Filtrar</button>
+                        </div>
+                    </form>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Motivo anulación</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if facturas %}
+                                {% for factura in facturas %}
+                                    <tr>
+                                        <td>{{ factura.id }}</td>
+                                        <td>{{ factura.fecha }}</td>
+                                        <td>{{ factura.cliente_nombre }}</td>
+                                        <td>{{ factura.mascota_nombre }}</td>
+                                        <td>${{ factura.total }}</td>
+                                        <td>
+                                            {% if factura.estado == 'Pendiente' %}
+                                                <span class="badge badge-danger">Pendiente</span>
+                                            {% elif factura.estado == 'Pagada' %}
+                                                <span class="badge badge-success">Pagada</span>
+                                            {% elif factura.estado == 'Anulada' %}
+                                                <span class="badge badge-warning">Anulada</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ factura.motivo_anulacion if factura.motivo_anulacion else 'Sin motivo' }}</td>
+                                        <td>
+                                            <a href="{{ url_for('admin_detalle_factura', factura_id=factura.id) }}" class="btn-link-action">
+                                                Ver detalle
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="empty-state">No hay facturas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

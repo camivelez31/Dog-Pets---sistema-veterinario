@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mascotas | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo-box">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
+        </div>
+
+        <div class="menu-box">
+            <p class="menu-title">Menú principal</p>
+
+            <ul class="menu-list">
+                <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                <li><a href="{{ url_for('clientes') }}" class="menu-link">Clientes</a></li>
+                <li><a href="{{ url_for('mascotas') }}" class="menu-link active">Mascotas</a></li>
+                <li><a href="{{ url_for('citas') }}" class="menu-link">Citas</a></li>
+                <li><a href="{{ url_for('historias') }}" class="menu-link">Historia clínica</a></li>
+                <li><a href="{{ url_for('guarderia') }}" class="menu-link">Guardería</a></li>
+                <li><a href="{{ url_for('facturacion') }}" class="menu-link">Facturación</a></li>
+                <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h2>Mascotas</h2>
+                <p>Gestión de mascotas registradas</p>
+            </div>
+
+            <div class="profile-box">
+                <img src="{{ url_for('static', filename='img/recepcionista.png') }}" class="avatar-img">
+                <div>
+                    <h3>{{ nombre }}</h3>
+                    <p class="role-text">Recepcionista</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="clientes-grid">
+
+            <!-- FORMULARIO -->
+            <div class="card form-card">
+                <div class="card-header">
+                    <h3>Registrar mascota</h3>
+                </div>
+
+                <form method="POST" action="{{ url_for('crear_mascota') }}" class="client-form">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Ej: Luna" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="especie">Especie</label>
+                            <input type="text" id="especie" name="especie" placeholder="Ej: Perro, gato" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="raza">Raza</label>
+                            <input type="text" id="raza" name="raza" placeholder="Ej: Labrador">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edad">Edad</label>
+                            <input type="number" id="edad" name="edad" placeholder="Ej: 3" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cliente_id">Cliente</label>
+                        <select id="cliente_id" name="cliente_id" required>
+                            <option value="">Seleccionar cliente</option>
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-secondary">Guardar mascota</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TABLA -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Listado de mascotas</h3>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Edad</th>
+                            <th>Cliente</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for m in mascotas %}
+                        <tr>
+                            <td>{{ m.id }}</td>
+                            <td>{{ m.nombre }}</td>
+                            <td>{{ m.especie }}</td>
+                            <td>{{ m.raza or 'Sin raza' }}</td>
+                            <td>{{ m.edad or 'Sin edad' }}</td>
+                            <td>{{ m.cliente_nombre }}</td>
+
+                            <td>
+                                {% if m.estado == 'Activo' %}
+                                    <span class="badge badge-success">Activo</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactivo</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="acciones-inline">
+
+                                    <button
+                                        type="button"
+                                        class="btn-table"
+                                        data-id="{{ m.id }}"
+                                        data-nombre="{{ m.nombre }}"
+                                        data-especie="{{ m.especie }}"
+                                        data-raza="{{ m.raza or '' }}"
+                                        data-edad="{{ m.edad or '' }}"
+                                        data-cliente="{{ m.cliente_id }}"
+                                        onclick="abrirModalEditar(this)"
+                                    >
+                                        Editar
+                                    </button>
+
+                                    <form action="{{ url_for('cambiar_estado_mascota', mascota_id=m.id) }}" method="POST">
+                                        <button type="submit" class="btn-table btn-noshow">
+                                            {% if m.estado == 'Activo' %}Inactivar{% else %}Activar{% endif %}
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ url_for('eliminar_mascota', mascota_id=m.id) }}" method="POST"
+                                        onsubmit="return confirm('¿Eliminar mascota?')">
+                                        <button type="submit" class="btn-table btn-cancel">Eliminar</button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- 🧩 MODAL (AQUÍ VA) -->
+<div id="modalEditarMascota" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Editar mascota</h3>
+
+        <form id="formEditarMascota" method="POST" class="client-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" id="edit_nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Especie</label>
+                    <input type="text" name="especie" id="edit_especie" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Raza</label>
+                    <input type="text" name="raza" id="edit_raza">
+                </div>
+
+                <div class="form-group">
+                    <label>Edad</label>
+                    <input type="number" name="edad" id="edit_edad">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Cliente</label>
+                <select name="cliente_id" id="edit_cliente_id" required>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-secondary">Guardar cambios</button>
+                <button type="button" class="btn-outline-link" onclick="cerrarModalEditar()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🧠 SCRIPT -->
+<script>
+function abrirModalEditar(btn) {
+    document.getElementById("edit_nombre").value = btn.dataset.nombre || "";
+    document.getElementById("edit_especie").value = btn.dataset.especie || "";
+    document.getElementById("edit_raza").value = btn.dataset.raza || "";
+    document.getElementById("edit_edad").value = btn.dataset.edad || "";
+    document.getElementById("edit_cliente_id").value = btn.dataset.cliente || "";
+
+    document.getElementById("formEditarMascota").action =
+        `/recepcionista/mascotas/editar/${btn.dataset.id}`;
+
+    document.getElementById("modalEditarMascota").style.display = "flex";
+}
+
+function cerrarModalEditar() {
+    document.getElementById("modalEditarMascota").style.display = "none";
+}
+</script>
+
+</body>
+</html>

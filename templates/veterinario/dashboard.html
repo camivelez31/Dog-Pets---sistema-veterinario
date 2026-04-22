@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Veterinario | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link active">Dashboard</a></li>
+                    <li><a href="{{ url_for('veterinario_historias') }}" class="menu-link">Historia clínica</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Hola, {{ nombre }}</h2>
+                    <p>Panel del veterinario</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/veterinario.png') }}" class="avatar-img" alt="Veterinario">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Veterinario</p>
+                        <span class="date-text">Consultas y atención clínica</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Citas por atender hoy</h3>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-box stat-blue">
+                            <h4>{{ citas_hoy }}</h4>
+                            <p>Citas del día</p>
+                        </div>
+                        <div class="stat-box stat-green">
+                            <h4>{{ historias_total }}</h4>
+                            <p>Historias clínicas</p>
+                        </div>
+                        <div class="stat-box stat-pink">
+                            <h4>{{ consultas_total }}</h4>
+                            <p>Consultas registradas</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <h4 class="section-title">Pacientes de hoy</h4>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if citas_lista %}
+                                {% for cita in citas_lista %}
+                                    <tr>
+                                        <td>{{ cita.hora }}</td>
+                                        <td>{{ cita.cliente_nombre }}</td>
+                                        <td>{{ cita.mascota_nombre }}</td>
+                                        <td>{{ cita.servicio }}</td>
+                                        <td>
+                                            {% if cita.estado == 'Confirmada' %}
+                                                <span class="badge badge-success">Confirmada</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">{{ cita.estado }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('veterinario_detalle_historia', historia_id=cita.historia_id) }}" class="btn-link-action">
+                                                Atender
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">No hay citas por atender hoy.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-header-simple">
+                        <h3>Historia clínica</h3>
+                        <span class="big-number">{{ historias_total }}</span>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Resumen</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Historias registradas</td>
+                                <td>{{ historias_total }}</td>
+                            </tr>
+                            <tr>
+                                <td>Consultas registradas</td>
+                                <td>{{ consultas_total }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer">
+                        <a href="{{ url_for('veterinario_historias') }}" class="btn-outline-link">Ver historias clínicas</a>
+                    </div>
+                </div>
+
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Incidencias médicas de guardería</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if incidencias_medicas %}
+                                {% for incidencia in incidencias_medicas %}
+                                    <tr>
+                                        <td>{{ incidencia.fecha_hora }}</td>
+                                        <td>{{ incidencia.cliente_nombre }}</td>
+                                        <td>{{ incidencia.mascota_nombre }}</td>
+                                        <td>{{ incidencia.descripcion }}</td>
+                                        <td>
+                                            {% if incidencia.atendida == 1 %}
+                                                <span class="badge badge-success">Atendida</span>
+                                            {% else %}
+                                                <a href="{{ url_for('veterinario_detalle_historia', historia_id=incidencia.historia_id) }}" class="btn-link-action">
+                                                    Atender
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="empty-state">No hay incidencias médicas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

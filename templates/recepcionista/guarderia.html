@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardería | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+
+                <ul class="menu-list">
+                    {% if rol == 'recepcionista' %}
+                        <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                        <li><a href="{{ url_for('clientes') }}" class="menu-link">Clientes</a></li>
+                        <li><a href="{{ url_for('mascotas') }}" class="menu-link">Mascotas</a></li>
+                        <li><a href="{{ url_for('citas') }}" class="menu-link">Citas</a></li>
+                        <li><a href="{{ url_for('historias') }}" class="menu-link">Historia clínica</a></li>
+                        <li><a href="{{ url_for('guarderia') }}" class="menu-link active">Guardería</a></li>
+                        <li><a href="{{ url_for('facturacion') }}" class="menu-link">Facturación</a></li>
+                    {% elif rol == 'guarderia' %}
+                        <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                        <li><a href="{{ url_for('guarderia') }}" class="menu-link active">Guardería</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Guardería</h2>
+                    <p>Registro de ingresos, salidas e incidencias</p>
+                </div>
+
+                <div class="profile-box">
+                    {% if rol == 'guarderia' %}
+                        <img src="{{ url_for('static', filename='img/guarderia.png') }}" class="avatar-img" alt="Guardería">
+                        <div>
+                            <h3>{{ nombre }}</h3>
+                            <p class="role-text">Encargado de guardería</p>
+                            <span class="date-text">Módulo de guardería</span>
+                        </div>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/recepcionista.jpg') }}" class="avatar-img" alt="Recepcionista">
+                        <div>
+                            <h3>{{ nombre }}</h3>
+                            <p class="role-text">Recepcionista</p>
+                            <span class="date-text">Módulo de guardería</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="clientes-grid">
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3>Registrar ingreso</h3>
+                    </div>
+
+                    <form action="{{ url_for('registrar_ingreso_guarderia') }}" method="POST" class="client-form">
+                        <div class="form-group">
+                            <label for="mascota_id">Mascota</label>
+                            <select id="mascota_id" name="mascota_id" required>
+                                <option value="">Seleccionar mascota</option>
+                                {% for mascota in mascotas %}
+                                    <option value="{{ mascota.id }}">
+                                        {{ mascota.mascota_nombre }} - Propietario: {{ mascota.cliente_nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observaciones_ingreso">Observaciones de ingreso</label>
+                            <textarea id="observaciones_ingreso" name="observaciones_ingreso" placeholder="Ej: llega con collar, requiere cuidado especial"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-secondary">Registrar ingreso</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de estadías</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mascota</th>
+                                <th>Cliente</th>
+                                <th>Ingreso</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                                <th>Total horas</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if estadias %}
+                                {% for estadia in estadias %}
+                                    <tr>
+                                        <td>{{ estadia.id }}</td>
+                                        <td>{{ estadia.mascota_nombre }}</td>
+                                        <td>{{ estadia.cliente_nombre }}</td>
+                                        <td>{{ estadia.fecha_hora_ingreso }}</td>
+                                        <td>{{ estadia.fecha_hora_salida if estadia.fecha_hora_salida else 'Sin salida' }}</td>
+                                        <td>
+                                            {% if estadia.estado == 'Activa' %}
+                                                <span class="badge badge-info">Activa</span>
+                                            {% else %}
+                                                <span class="badge badge-success">Finalizada</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ estadia.total_horas if estadia.total_horas else 'En curso' }}</td>
+                                        <td>{{ estadia.observaciones_ingreso if estadia.observaciones_ingreso else 'Sin observaciones' }}</td>
+                                        <td>
+                                            <div class="acciones-cita">
+                                                {% if estadia.estado == 'Activa' %}
+                                                    <form action="{{ url_for('registrar_salida_guarderia', estadia_id=estadia.id) }}" method="POST" class="accion-form-inline">
+                                                        <button type="submit" class="btn-table">Registrar salida</button>
+                                                    </form>
+
+                                                    <form action="{{ url_for('registrar_incidencia_guarderia', estadia_id=estadia.id) }}" method="POST" class="accion-form-incidencia">
+                                                        <label class="incidencia-label">Registrar incidencia</label>
+
+                                                        <select name="tipo" required>
+                                                            <option value="">Seleccionar tipo</option>
+                                                            <option value="General">General</option>
+                                                            <option value="Médica">Médica</option>
+                                                        </select>
+
+                                                        <textarea name="descripcion" placeholder="Escribe la incidencia aquí..." required></textarea>
+                                                        <button type="submit" class="btn-table btn-noshow">Registrar incidencia</button>
+                                                    </form>
+                                                {% else %}
+                                                    <span class="text-muted">Completada</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="9" class="empty-state">No hay estadías registradas todavía.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Incidencias registradas</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Estadía</th>
+                                <th>Mascota</th>
+                                <th>Cliente</th>
+                                <th>Fecha y hora</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if incidencias %}
+                                {% for incidencia in incidencias %}
+                                    <tr>
+                                        <td>{{ incidencia.id }}</td>
+                                        <td>{{ incidencia.estadia_id }}</td>
+                                        <td>{{ incidencia.mascota_nombre }}</td>
+                                        <td>{{ incidencia.cliente_nombre }}</td>
+                                        <td>{{ incidencia.fecha_hora }}</td>
+
+                                        <!-- TIPO -->
+                                        <td>
+                                            {% if incidencia.tipo == 'Médica' %}
+                                                <span class="badge badge-warning">Médica</span>
+                                            {% else %}
+                                                <span class="badge badge-info">General</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- DESCRIPCIÓN -->
+                                        <td>{{ incidencia.descripcion }}</td>
+
+                                        <!-- ESTADO -->
+                                        <td>
+                                            {% if incidencia.atendida == 1 %}
+                                                <span class="badge badge-success">Atendida</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Pendiente</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="empty-state">No hay incidencias registradas todavía.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mascotas | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link active">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Mascotas</h2>
+                    <p>Consulta y gestión de mascotas</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Admin">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Módulo de mascotas</span>
+                    </div>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="clientes-grid">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de mascotas</h3>
+                    </div>
+
+                    <form method="GET" action="{{ url_for('admin_mascotas') }}" class="search-form-admin">
+                        <div class="search-group-admin">
+                            <input type="text" name="q" value="{{ busqueda }}" placeholder="Nombre, especie, raza o propietario">
+                            <button type="submit" class="btn-secondary">Buscar</button>
+                        </div>
+                    </form>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Especie</th>
+                                <th>Raza</th>
+                                <th>Edad</th>
+                                <th>Propietario</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if mascotas %}
+                                {% for mascota in mascotas %}
+                                    <tr>
+                                        <td>{{ mascota.id }}</td>
+                                        <td>{{ mascota.nombre }}</td>
+                                        <td>{{ mascota.especie }}</td>
+                                        <td>{{ mascota.raza if mascota.raza else 'Sin raza' }}</td>
+                                        <td>{{ mascota.edad if mascota.edad else 'Sin edad' }}</td>
+                                        <td>{{ mascota.cliente_nombre }}</td>
+                                        <td>
+                                            {% if mascota.estado == 'Activo' %}
+                                                <span class="badge badge-success">Activo</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="acciones-inline">
+
+                                                <button
+                                                    type="button"
+                                                    class="btn-table"
+                                                    data-id="{{ mascota.id }}"
+                                                    data-nombre="{{ mascota.nombre }}"
+                                                    data-especie="{{ mascota.especie }}"
+                                                    data-raza="{{ mascota.raza or '' }}"
+                                                    data-edad="{{ mascota.edad or '' }}"
+                                                    data-cliente="{{ mascota.cliente_id }}"
+                                                    onclick="abrirModalEditarAdmin(this)"
+                                                >
+                                                    Editar
+                                                </button>
+
+                                                <form action="{{ url_for('admin_cambiar_estado_mascota', mascota_id=mascota.id) }}" method="POST">
+                                                    <button type="submit" class="btn-table btn-noshow">
+                                                        {% if mascota.estado == 'Activo' %}Inactivar{% else %}Activar{% endif %}
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="empty-state">No hay mascotas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL EDITAR -->
+    <div id="modalEditarMascotaAdmin" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Editar mascota</h3>
+
+            <form id="formEditarMascotaAdmin" method="POST" class="client-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" id="admin_edit_nombre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Especie</label>
+                        <input type="text" name="especie" id="admin_edit_especie" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Raza</label>
+                        <input type="text" name="raza" id="admin_edit_raza">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <input type="number" name="edad" id="admin_edit_edad">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select name="cliente_id" id="admin_edit_cliente_id" required>
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-secondary">Guardar cambios</button>
+                    <button type="button" class="btn-outline-link" onclick="cerrarModalEditarAdmin()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalEditarAdmin(btn) {
+            document.getElementById("admin_edit_nombre").value = btn.dataset.nombre || "";
+            document.getElementById("admin_edit_especie").value = btn.dataset.especie || "";
+            document.getElementById("admin_edit_raza").value = btn.dataset.raza || "";
+            document.getElementById("admin_edit_edad").value = btn.dataset.edad || "";
+            document.getElementById("admin_edit_cliente_id").value = btn.dataset.cliente || "";
+
+            document.getElementById("formEditarMascotaAdmin").action =
+                `/admin/mascotas/editar/${btn.dataset.id}`;
+
+            document.getElementById("modalEditarMascotaAdmin").style.display = "flex";
+        }
+
+        function cerrarModalEditarAdmin() {
+            document.getElementById("modalEditarMascotaAdmin").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>

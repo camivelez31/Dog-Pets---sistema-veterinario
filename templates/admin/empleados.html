@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empleados | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link active">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Empleados</h2>
+                    <p>Gestión de usuarios del sistema</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Admin">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Módulo de empleados</span>
+                    </div>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="clientes-grid">
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3>Crear empleado</h3>
+                    </div>
+
+                    <form action="{{ url_for('crear_empleado') }}" method="POST" class="client-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type="text" name="nombre" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Usuario</label>
+                                <input type="text" name="usuario" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type="text" name="password" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Rol</label>
+                                <select name="rol" required>
+                                    <option value="">Seleccionar rol</option>
+                                    <option value="recepcionista">Recepcionista</option>
+                                    <option value="veterinario">Veterinario</option>
+                                    <option value="guarderia">Guardería</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select name="estado" required>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-secondary">Guardar empleado</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de empleados</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if empleados %}
+                                {% for empleado in empleados %}
+                                    <tr>
+                                        <td>{{ empleado.id }}</td>
+                                        <td>{{ empleado.nombre }}</td>
+                                        <td>{{ empleado.usuario }}</td>
+                                        <td>{{ empleado.rol }}</td>
+                                        <td>
+                                            {% if empleado.estado == 'Activo' %}
+                                                <span class="badge badge-success">Activo</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('cambiar_estado_empleado', empleado_id=empleado.id) }}" method="POST">
+                                                <button type="submit" class="btn-table">
+                                                    {% if empleado.estado == 'Activo' %}
+                                                        Desactivar
+                                                    {% else %}
+                                                        Activar
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">No hay empleados registrados.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

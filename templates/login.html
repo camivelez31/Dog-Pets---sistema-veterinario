@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+</head>
+<body class="login-page">
+
+    <div class="login-card">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
+        <p class="login-subtitle">Iniciar sesión</p>
+
+        {% if error %}
+            <div class="alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" name="usuario" placeholder="Ingresa tu usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="Ingresa tu contraseña" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Ingresar</button>
+        </form>
+
+        <div class="test-users">
+            <p><strong>Usuarios de prueba</strong></p>
+            <p>recepcionista / 1234</p>
+            <p>veterinario / 1234</p>
+            <p>guarderia / 1234</p>
+            <p>admin / 1234</p>
+        </div>
+    </div>
+
+</body>
+</html>

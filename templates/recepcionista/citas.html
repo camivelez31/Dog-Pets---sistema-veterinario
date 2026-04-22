@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('citas') }}" class="menu-link active">Citas</a></li>
+                    <li><a href="{{ url_for('historias') }}" class="menu-link">Historia clínica</a></li>
+                    <li><a href="{{ url_for('guarderia') }}" class="menu-link">Guardería</a></li>
+                    <li><a href="{{ url_for('facturacion') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Citas</h2>
+                    <p>Gestión y programación de citas</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/recepcionista.png') }}" class="avatar-img" alt="Recepcionista">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Recepcionista</p>
+                        <span class="date-text">Módulo de citas</span>
+                    </div>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="clientes-grid">
+
+                    <div class="card table-card">
+                        <div class="card-header agenda-header">
+                            <div>
+                                <h3>Agenda del día</h3>
+                                <p class="agenda-subtitle">Visualización por día con actualización automática</p>
+                            </div>
+
+                            <div class="agenda-controls">
+                                <label for="fecha_agenda">Fecha</label>
+                                <input type="date" id="fecha_agenda" value="{{ fecha_agenda }}">
+                            </div>
+                        </div>
+
+                        <div class="agenda-toolbar">
+                            <span class="agenda-status-dot"></span>
+                            <span class="agenda-status-text">Actualización automática activa</span>
+                        </div>
+
+                        <div id="agenda-calendario" class="agenda-calendario">
+                            <!-- Se llena con JS -->
+                        </div>
+                    </div>
+
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3>Nueva cita</h3>
+                    </div>
+
+                    <form action="{{ url_for('crear_cita') }}" method="POST" class="client-form">
+
+                        <div class="form-group">
+                            <label for="mascota_id">Mascota</label>
+                            <select id="mascota_id" name="mascota_id" required>
+                                <option value="">Seleccionar mascota</option>
+                                {% for mascota in mascotas %}
+                                    <option value="{{ mascota.id }}">
+                                        {{ mascota.mascota_nombre }} - Propietario: {{ mascota.cliente_nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha">Fecha</label>
+                                <input type="date" id="fecha" name="fecha" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hora">Hora</label>
+                                <input type="time" id="hora" name="hora" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="veterinario_id">Veterinario</label>
+                            <select id="veterinario_id" name="veterinario_id" required>
+                                <option value="">Seleccionar veterinario</option>
+                                {% for vet in veterinarios %}
+                                    <option value="{{ vet.id }}">{{ vet.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="servicio">Servicio</label>
+                                <select id="servicio" name="servicio" required>
+                                    <option value="">Seleccionar servicio</option>
+                                    <option value="Consulta">Consulta</option>
+                                    <option value="Vacuna">Vacuna</option>
+                                    <option value="Control">Control</option>
+                                    <option value="Desparasitación">Desparasitación</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="estado">Estado</label>
+                                <select id="estado" name="estado" required>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Confirmada">Confirmada</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observaciones">Observaciones</label>
+                            <textarea id="observaciones" name="observaciones" placeholder="Observaciones adicionales"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-secondary">Guardar cita</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de citas</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Servicio</th>
+                                <th>Veterinario</th>
+                                <th>Estado</th>
+                                <th>Observaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if citas %}
+                                {% for cita in citas %}
+                                    <tr>
+                                        <td>{{ cita.id }}</td>
+                                        <td>{{ cita.fecha }}</td>
+                                        <td>{{ cita.hora }}</td>
+                                        <td>{{ cita.cliente_nombre }}</td>
+                                        <td>{{ cita.mascota_nombre }}</td>
+                                        <td>{{ cita.servicio }}</td>
+                                        <td>
+                                            {% if cita.estado == 'Confirmada' %}
+                                                <span class="badge badge-success">Confirmada</span>
+                                            {% elif cita.estado == 'Pendiente' %}
+                                                <span class="badge badge-danger">Pendiente</span>
+                                            {% elif cita.estado == 'Cancelada' %}
+                                                <span class="badge badge-danger">Cancelada</span>
+                                            {% elif cita.estado == 'No asistió' %}
+                                                <span class="badge badge-warning">No asistió</span>
+                                            {% else %}
+                                                <span class="badge badge-info">{{ cita.estado }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ cita.observaciones if cita.observaciones else 'Sin observaciones' }}</td>
+                                        <td>
+                                            <div class="acciones-cita">
+                                                <form action="{{ url_for('reprogramar_cita', cita_id=cita.id) }}" method="POST" class="accion-form-inline">
+                                                    <input type="date" name="nueva_fecha" required>
+                                                    <input type="time" name="nueva_hora" required>
+                                                    <button type="submit" class="btn-table">Reprogramar</button>
+                                                </form>
+
+                                                <form action="{{ url_for('cancelar_cita', cita_id=cita.id) }}" method="POST" class="accion-form-inline">
+                                                    <button type="submit" class="btn-table btn-cancel">Cancelar</button>
+                                                </form>
+
+                                                <form action="{{ url_for('marcar_no_show', cita_id=cita.id) }}" method="POST" class="accion-form-inline">
+                                                    <button type="submit" class="btn-table btn-noshow">No asistió</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="9" class="empty-state">No hay citas registradas todavía.</td>
+                                    <td>{{ cita.veterinario_nombre if cita.veterinario_nombre else 'Sin asignar' }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+    const agendaCalendario = document.getElementById("agenda-calendario");
+    const fechaAgendaInput = document.getElementById("fecha_agenda");
+
+    function badgeEstadoClase(estado) {
+        if (estado === "Confirmada") return "agenda-badge agenda-badge-success";
+        if (estado === "Pendiente") return "agenda-badge agenda-badge-warning";
+        if (estado === "Atendida") return "agenda-badge agenda-badge-info";
+        return "agenda-badge";
+    }
+
+    function renderAgenda(citas) {
+        const franjas = [
+            "07:00", "08:00", "09:00", "10:00", "11:00",
+            "12:00", "13:00", "14:00", "15:00", "16:00",
+            "17:00", "18:00"
+        ];
+
+        if (!citas || citas.length === 0) {
+            agendaCalendario.innerHTML = `
+                <div class="agenda-empty">
+                    No hay citas activas para esta fecha.
+                </div>
+            `;
+            return;
+        }
+
+        const html = franjas.map(hora => {
+            const citasFranja = citas.filter(c => c.hora && c.hora.startsWith(hora));
+
+            const contenido = citasFranja.length
+                ? citasFranja.map(cita => `
+                    <div class="agenda-cita-card">
+                        <div class="agenda-cita-top">
+                            <strong>${cita.mascota}</strong>
+                            <span class="${badgeEstadoClase(cita.estado)}">${cita.estado}</span>
+                        </div>
+                        <div class="agenda-cita-body">
+                            <p><strong>Cliente:</strong> ${cita.cliente}</p>
+                            <p><strong>Veterinario:</strong> ${cita.veterinario}</p>
+                            <p><strong>Servicio:</strong> ${cita.servicio}</p>
+                        </div>
+                    </div>
+                `).join("")
+                : `<div class="agenda-slot-empty">Disponible</div>`;
+
+            return `
+                <div class="agenda-row">
+                    <div class="agenda-hour">${hora}</div>
+                    <div class="agenda-slot">${contenido}</div>
+                </div>
+            `;
+        }).join("");
+
+        agendaCalendario.innerHTML = html;
+    }
+
+    async function cargarAgenda() {
+        const fecha = fechaAgendaInput.value;
+        const response = await fetch(`/recepcionista/citas/agenda-data?fecha=${fecha}`);
+        const data = await response.json();
+        renderAgenda(data);
+    }
+
+    fechaAgendaInput.addEventListener("change", cargarAgenda);
+
+    cargarAgenda();
+    setInterval(cargarAgenda, 10000);
+</script>
+
+</body>
+</html>

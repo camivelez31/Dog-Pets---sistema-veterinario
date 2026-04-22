@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link active">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Clientes</h2>
+                    <p>Consulta y gestión de clientes</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Admin">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Módulo de clientes</span>
+                    </div>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <section class="clientes-grid">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Listado de clientes</h3>
+                    </div>
+
+                    <form method="GET" action="{{ url_for('admin_clientes') }}" class="client-form" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Buscar cliente</label>
+                                <input type="text" name="q" value="{{ busqueda }}" placeholder="Nombre, documento o correo">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-secondary">Buscar</button>
+                        </div>
+                    </form>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Documento</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Dirección</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if clientes %}
+                                {% for cliente in clientes %}
+                                    <tr>
+                                        <td>{{ cliente.id }}</td>
+                                        <td>{{ cliente.nombre }}</td>
+                                        <td>{{ cliente.documento }}</td>
+                                        <td>{{ cliente.telefono }}</td>
+                                        <td>{{ cliente.correo }}</td>
+                                        <td>{{ cliente.direccion if cliente.direccion else 'Sin dirección' }}</td>
+                                        <td>
+                                            {% if cliente.estado == 'Activo' %}
+                                                <span class="badge badge-success">Activo</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('admin_cambiar_estado_cliente', cliente_id=cliente.id) }}" method="POST">
+                                                <button type="submit" class="btn-table">
+                                                    {% if cliente.estado == 'Activo' %}
+                                                        Desactivar
+                                                    {% else %}
+                                                        Activar
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="empty-state">No hay clientes registrados.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

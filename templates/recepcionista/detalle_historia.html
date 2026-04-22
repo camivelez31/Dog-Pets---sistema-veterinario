@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle historia clínica | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('historias') }}" class="menu-link active">Historia clínica</a></li>
+                    <li><a href="{{ url_for('guarderia') }}" class="menu-link">Guardería</a></li>
+                    <li><a href="{{ url_for('facturacion') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Detalle historia clínica</h2>
+                    <p>Consulta de información médica de la mascota</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/recepcionista.png') }}" class="avatar-img" alt="Recepcionista">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Recepcionista</p>
+                        <span class="date-text">Solo lectura</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="clientes-grid">
+
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h3>Información general</h3>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">ID Historia</span>
+                            <p>{{ historia.id }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Mascota</span>
+                            <p>{{ historia.mascota_nombre }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Especie</span>
+                            <p>{{ historia.especie }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Raza</span>
+                            <p>{{ historia.raza if historia.raza else 'Sin raza' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Edad</span>
+                            <p>{{ historia.edad if historia.edad else 'Sin edad' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Propietario</span>
+                            <p>{{ historia.cliente_nombre }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Documento</span>
+                            <p>{{ historia.documento }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Teléfono</span>
+                            <p>{{ historia.telefono }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Correo</span>
+                            <p>{{ historia.correo }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha creación</span>
+                            <p>{{ historia.fecha_creacion }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Registros clínicos</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Motivo</th>
+                                <th>Diagnóstico</th>
+                                <th>Tratamiento</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if consultas %}
+                                {% for consulta in consultas %}
+                                    <tr>
+                                        <td>{{ consulta.fecha }}</td>
+                                        <td>{{ consulta.motivo }}</td>
+                                        <td>{{ consulta.diagnostico }}</td>
+                                        <td>{{ consulta.tratamiento }}</td>
+                                        <td>{{ consulta.observaciones if consulta.observaciones else 'Sin observaciones' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="empty-state">Esta mascota aún no tiene registros clínicos.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <a href="{{ url_for('historias') }}" class="btn-outline-link">Volver</a>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

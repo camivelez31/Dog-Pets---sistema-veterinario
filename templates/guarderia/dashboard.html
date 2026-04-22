@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Guardería | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link active">Dashboard</a></li>
+                    <li><a href="{{ url_for('guarderia') }}" class="menu-link">Guardería</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Hola, {{ nombre }}</h2>
+                    <p>Panel de guardería</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/guarderia.png') }}" class="avatar-img" alt="Guardería">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Encargado de guardería</p>
+                        <span class="date-text">Ingresos, salidas e incidencias</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Resumen guardería</h3>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-box stat-blue">
+                            <h4>{{ guarderia_activas }}</h4>
+                            <p>Mascotas activas</p>
+                        </div>
+
+                        <div class="stat-box stat-yellow">
+                            <h4>{{ ingresos_hoy }}</h4>
+                            <p>Ingresos de hoy</p>
+                        </div>
+
+                        <div class="stat-box stat-pink">
+                            <h4>{{ incidencias_hoy }}</h4>
+                            <p>Incidencias de hoy</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <h4 class="section-title">Estadías activas</h4>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hora ingreso</th>
+                                <th>Mascota</th>
+                                <th>Cliente</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if estadias_activas %}
+                                {% for item in estadias_activas %}
+                                    <tr>
+                                        <td>{{ item.fecha_hora_ingreso }}</td>
+                                        <td>{{ item.mascota_nombre }}</td>
+                                        <td>{{ item.cliente_nombre }}</td>
+                                        <td>{{ item.observaciones_ingreso if item.observaciones_ingreso else 'Sin observaciones' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="empty-state">No hay mascotas activas en guardería.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer">
+                        <a href="{{ url_for('guarderia') }}" class="btn-outline-link">Ir al módulo guardería</a>
+                    </div>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-header-simple">
+                        <h3>Salidas pendientes</h3>
+                        <span class="big-number">{{ salidas_pendientes }}</span>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Activas</td>
+                                <td>{{ guarderia_activas }}</td>
+                            </tr>
+                            <tr>
+                                <td>Pendientes de salida</td>
+                                <td>{{ salidas_pendientes }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer">
+                        <a href="{{ url_for('guarderia') }}" class="btn-outline-link">Registrar movimientos</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

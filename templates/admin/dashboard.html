@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | DOG PETS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="app-page">
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img" alt="Logo DOG PETS">
+            </div>
+
+            <div class="menu-box">
+                <p class="menu-title">Menú principal</p>
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('dashboard') }}" class="menu-link active">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_empleados') }}" class="menu-link">Empleados</a></li>
+                    <li><a href="{{ url_for('admin_veterinarios') }}" class="menu-link">Veterinarios</a></li>
+                    <li><a href="{{ url_for('admin_clientes') }}" class="menu-link">Clientes</a></li>
+                    <li><a href="{{ url_for('admin_mascotas') }}" class="menu-link">Mascotas</a></li>
+                    <li><a href="{{ url_for('admin_citas') }}" class="menu-link">Citas</a></li>
+                    <li><a href="{{ url_for('admin_facturas') }}" class="menu-link">Facturación</a></li>
+                    <li><a href="{{ url_for('admin_auditoria') }}" class="menu-link">Auditoría</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="menu-link">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="welcome-box">
+                    <h2>Hola, {{ nombre }}</h2>
+                    <p>Panel de administración general</p>
+                </div>
+
+                <div class="profile-box">
+                    <img src="{{ url_for('static', filename='img/admin.png') }}" class="avatar-img" alt="Administrador">
+                    <div>
+                        <h3>{{ nombre }}</h3>
+                        <p class="role-text">Administrador</p>
+                        <span class="date-text">Vista global del sistema</span>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Resumen general</h3>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-box stat-blue">
+                            <h4>{{ total_clientes }}</h4>
+                            <p>Clientes</p>
+                        </div>
+
+                        <div class="stat-box stat-green">
+                            <h4>{{ total_mascotas }}</h4>
+                            <p>Mascotas</p>
+                        </div>
+
+                        <div class="stat-box stat-pink">
+                            <h4>{{ total_citas }}</h4>
+                            <p>Citas</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-box stat-yellow">
+                            <h4>{{ total_empleados }}</h4>
+                            <p>Empleados</p>
+                        </div>
+
+                        <div class="stat-box stat-light">
+                            <h4>{{ total_veterinarios }}</h4>
+                            <p>Veterinarios</p>
+                        </div>
+
+                        <div class="stat-box stat-pink">
+                            <h4>{{ facturas_pendientes }}</h4>
+                            <p>Facturas pendientes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-small">
+                    <div class="card-header-simple">
+                        <h3>Accesos rápidos</h3>
+                        <span class="big-number">+</span>
+                    </div>
+
+                    <div class="quick-links-grid">
+                        <a href="{{ url_for('admin_empleados') }}" class="quick-link-card">Empleados</a>
+                        <a href="{{ url_for('admin_veterinarios') }}" class="quick-link-card">Veterinarios</a>
+                        <a href="{{ url_for('admin_clientes') }}" class="quick-link-card">Clientes</a>
+                        <a href="{{ url_for('admin_mascotas') }}" class="quick-link-card">Mascotas</a>
+                        <a href="{{ url_for('admin_citas') }}" class="quick-link-card">Citas</a>
+                        <a href="{{ url_for('admin_facturas') }}" class="quick-link-card">Facturación</a>
+                    </div>
+                </div>
+
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Últimas citas</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Veterinario</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if ultimas_citas %}
+                                {% for cita in ultimas_citas %}
+                                    <tr>
+                                        <td>{{ cita.fecha }}</td>
+                                        <td>{{ cita.hora }}</td>
+                                        <td>{{ cita.cliente_nombre }}</td>
+                                        <td>{{ cita.mascota_nombre }}</td>
+                                        <td>{{ cita.veterinario_nombre if cita.veterinario_nombre else 'Sin asignar' }}</td>
+                                        <td>
+                                            {% if cita.estado == 'Confirmada' %}
+                                                <span class="badge badge-success">Confirmada</span>
+                                            {% elif cita.estado == 'Pendiente' %}
+                                                <span class="badge badge-warning">Pendiente</span>
+                                            {% elif cita.estado == 'Atendida' %}
+                                                <span class="badge badge-info">Atendida</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Cancelada</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">No hay citas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer">
+                        <a href="{{ url_for('admin_citas') }}" class="btn-outline-link">Ver todas las citas</a>
+                    </div>
+                </div>
+
+                <div class="card card-large">
+                    <div class="card-header">
+                        <h3>Últimas facturas</h3>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Mascota</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if ultimas_facturas %}
+                                {% for factura in ultimas_facturas %}
+                                    <tr>
+                                        <td>{{ factura.id }}</td>
+                                        <td>{{ factura.fecha }}</td>
+                                        <td>{{ factura.cliente_nombre }}</td>
+                                        <td>{{ factura.mascota_nombre }}</td>
+                                        <td>${{ factura.total }}</td>
+                                        <td>
+                                            {% if factura.estado == 'Pagada' %}
+                                                <span class="badge badge-success">Pagada</span>
+                                            {% elif factura.estado == 'Pendiente' %}
+                                                <span class="badge badge-warning">Pendiente</span>
+                                            {% else %}
+                                                <span class="badge badge-danger">Anulada</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">No hay facturas registradas.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer">
+                        <a href="{{ url_for('admin_facturas') }}" class="btn-outline-link">Ver todas las facturas</a>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>
