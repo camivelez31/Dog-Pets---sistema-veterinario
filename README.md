@@ -1,14 +1,14 @@
-# 🐾 Sistema de Gestión Veterinaria
+# Sistema de Gestión Veterinaria
 
 Sistema web desarrollado en Flask para la gestión de una clínica veterinaria.
 
-## 👥 Roles del sistema
+##  Roles del sistema
 - Administrador
 - Recepcionista
 - Veterinario
 - Guardería
 
-## 📦 Módulos
+## Módulos
 - Clientes
 - Mascotas
 - Citas
@@ -17,7 +17,7 @@ Sistema web desarrollado en Flask para la gestión de una clínica veterinaria.
 - Guardería
 - Auditoría
 
-## 🧠 Patrones de diseño implementados
+##  Patrones de diseño implementados
 - Singleton → conexión a base de datos
 - Factory → creación de entidades
 - Strategy → métodos de pago
