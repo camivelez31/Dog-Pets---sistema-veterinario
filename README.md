@@ -55,7 +55,7 @@ http://127.0.0.1:5000
 - Módulo de citas implementado con gestión de agenda y disponibilidad veterinaria.
 - Implementación del módulo de auditoría para registrar acciones críticas del sistema.
 - Implementación del patrón Factory para la creación de mascotas, empleados y facturas.
-- Agregar facturación
+- Desarrollo del módulo de facturación con generación de facturas, detalle y registro de pagos.
 - Corregir gestión de mascotas
 
 ## Integrantes
