@@ -1,42 +1,71 @@
-# Sistema de Gestión Veterinaria
+# 🐾 DOG PETS - Sistema de Gestión Veterinaria
 
-Sistema web desarrollado en Flask para la gestión de una clínica veterinaria.
+## Descripción
 
-##  Roles del sistema
-- Administrador
-- Recepcionista
-- Veterinario
-- Guardería
+DOG PETS es un sistema web desarrollado en Flask para la gestión de una clínica veterinaria.
 
-## Módulos
+Permite administrar:
+
 - Clientes
 - Mascotas
 - Citas
-- Historia clínica
-- Facturación
+- Historias clínicas
 - Guardería
+- Facturación
+- Pagos
 - Auditoría
 
-##  Patrones de diseño implementados
-- Singleton → conexión a base de datos
-- Factory → creación de entidades
-- Strategy → métodos de pago
-- Observer → auditoría automática
-- Decorator → construcción de facturas
+---
 
-## Tecnologías
+## Tecnologías utilizadas
+
 - Python
 - Flask
 - SQLite
 - HTML
 - CSS
 - JavaScript
+- ReportLab
 
-## Cómo ejecutar
-1. Clonar el repositorio
-2. Instalar Flask:
-   pip install flask
-3. Ejecutar:
-   python app.py
-4. Abrir en navegador:
-   http://127.0.0.1:5000
+---
+
+## Patrones de diseño implementados
+
+- Singleton
+- Factory
+- Strategy
+- Observer
+- Decorator
+
+---
+
+## Instalación
+
+Clonar repositorio:
+git clone https://github.com/camivelez31/Dog-Pets---sistema-veterinario.git
+
+
+Entrar a la carpeta:
+cd Dog-Pets---sistema-veterinario
+
+
+Instalar dependencias:
+pip install flask
+pip install reportlab
+
+
+Ejecutar proyecto:
+python app.py
+
+
+Abrir en navegador:
+http://127.0.0.1:5000
+
+
+---
+
+## Integrantes
+
+- Maria Camila Vélez Mazo
+- Sandra Milena Londoño Loaiza
+- Jesús David Meza Montiel
