@@ -45,7 +45,7 @@ python app.py
 
 Abrir en:
 
-```text
+```
 http://127.0.0.1:5000
 ```
 
@@ -57,6 +57,73 @@ http://127.0.0.1:5000
 - Implementación del patrón Factory para la creación de mascotas, empleados y facturas.
 - Desarrollo del módulo de facturación con generación de facturas, detalle y registro de pagos.
 - Correcciones en la gestión de mascotas, incluyendo edición, activación e inactivación.
+
+## Documentación 
+
+### Descripción general
+
+DOG PETS es un sistema web para la gestión de una clínica veterinaria. Permite administrar clientes, mascotas, citas, historias clínicas, guardería, facturación, pagos y auditoría.
+
+### Funcionalidades principales
+
+- Registro y gestión de clientes.
+- Registro y gestión de mascotas.
+- Creación, reprogramación y cancelación de citas.
+- Consulta y actualización de historias clínicas.
+- Registro de consultas veterinarias.
+- Gestión de guardería e incidencias.
+- Generación de facturas.
+- Registro de pagos.
+- Auditoría de acciones críticas.
+
+### Roles del sistema
+
+#### Administrador
+- Gestión de empleados.
+- Gestión de veterinarios.
+- Consulta de auditoría.
+- Consulta de facturación.
+
+#### Recepcionista
+- Registro de clientes.
+- Registro de mascotas.
+- Gestión de citas.
+- Generación de facturas.
+- Registro de pagos.
+- Consulta de historias clínicas.
+
+#### Veterinario
+- Consulta de agenda.
+- Registro de consultas clínicas.
+- Consulta de historias clínicas.
+- Atención de incidencias médicas.
+
+#### Guardería
+- Registro de ingresos y salidas.
+- Registro de incidencias.
+- Seguimiento de mascotas hospedadas.
+
+### Arquitectura
+
+Frontend:
+- HTML
+- CSS
+- JavaScript
+
+Backend:
+- Python
+- Flask
+
+Base de datos:
+- SQLite
+
+### Patrones de diseño implementados
+
+- Singleton
+- Factory
+- Strategy
+- Observer
+- Decorator
 
 ## Integrantes
 
