@@ -1,4 +1,4 @@
-# 🐾 DOG PETS - Sistema de Gestión Veterinaria
+# DOG PETS - Sistema de Gestión Veterinaria
 
 ## Descripción
 
